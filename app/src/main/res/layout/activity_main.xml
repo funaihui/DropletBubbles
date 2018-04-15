@@ -13,7 +13,18 @@
         android:layout_width="wrap_content"
         app:outRadius="30dp"
         app:innerRadius="25dp"
+        app:backgroundColor="@android:color/white"
+        app:waveColor="@color/colorWave"
+        android:id="@+id/dbMainBubbles1"
         android:layout_height="wrap_content" />
 
-
+    <com.wizardev.dropletbubbles.view.DropletBubbles
+        android:layout_width="wrap_content"
+        android:layout_marginTop="8dp"
+        app:outRadius="30dp"
+        app:backgroundColor="@android:color/white"
+        app:waveColor="@color/colorWave"
+        app:innerRadius="25dp"
+        android:id="@+id/dbMainBubbles2"
+        android:layout_height="wrap_content" />
 </LinearLayout>

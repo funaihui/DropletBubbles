@@ -3,5 +3,7 @@
     <declare-styleable name="DropletBubbles">
         <attr name="innerRadius" format="dimension" />
         <attr name="outRadius" format="dimension" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="waveColor" format="color" />
     </declare-styleable>
 </resources>
