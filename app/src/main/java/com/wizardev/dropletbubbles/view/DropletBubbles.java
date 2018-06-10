@@ -9,8 +9,6 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -35,10 +33,9 @@ public class DropletBubbles extends View {
     private int mOutRadius;
     private int mResultWidth;
     private int mResultHeight;
-    private Context mContext;
     private static final String TAG = "DropletBubbles";
 
-    private float baseLine = 0;// 基线，用于控制水位上涨的，这里是写死了没动，你可以不断的设置改变。
+    private float baseLine = 0;// 基线，用于控制水位上涨的
     private int waveHeight;// 波浪的最高度
     private int waveWidth;//波长
     private float offset = 0f;//偏移量
@@ -46,18 +43,7 @@ public class DropletBubbles extends View {
     private int height = 0;
     private int mBackgroundColor;
     private int mWaveColor;
-    private float mStartY;
 
-    private SensorManager sensorManager;
-
-    private Sensor gyroscopeSensor;
-
-    private static final float NS2S = 1.0f / 1000000000.0f;
-
-    private float timestamp;
-
-    private float angle[] = new float[3];
-    private float mAnglez;
     public DropletBubbles(Context context) {
         this(context, null);
     }
@@ -68,7 +54,6 @@ public class DropletBubbles extends View {
 
     public DropletBubbles(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.DropletBubbles, 0, defStyleAttr);
         mInnerRadius = typedArray.getDimensionPixelSize(R.styleable.DropletBubbles_innerRadius, 10);
         mOutRadius = typedArray.getDimensionPixelSize(R.styleable.DropletBubbles_outRadius, 12);
@@ -76,7 +61,7 @@ public class DropletBubbles extends View {
         mWaveColor = typedArray.getColor(R.styleable.DropletBubbles_waveColor, getResources().getColor(R.color.colorAccent));
         typedArray.recycle();
 
-        init(context);//初始化画笔
+        init();//初始化画笔
 
     }
 
@@ -105,7 +90,7 @@ public class DropletBubbles extends View {
         setMeasuredDimension(mResultWidth, mResultHeight);
     }
 
-    private void init(Context context) {
+    private void init() {
         mBackgroundPaint = new Paint();
         mBackgroundPaint.setAntiAlias(true);
         mBackgroundPaint.setColor(mBackgroundColor);
@@ -121,7 +106,7 @@ public class DropletBubbles extends View {
 
         mBackgroundPath = new Path();
         mBubblesPath = new Path();
-        waveHeight = dp2px(mContext, 4);
+        waveHeight = dp2px(getContext(), 4);
 
     }
 
@@ -138,6 +123,7 @@ public class DropletBubbles extends View {
         super.onDraw(canvas);
         mBubblesPath.reset();
 
+        //设置渐变色
         Shader shader = new LinearGradient(mResultWidth / 2, mResultWidth / 2 - mInnerRadius, mResultWidth / 2, mResultWidth / 2 + mInnerRadius, Color.parseColor("#9592FB"),
                 Color.parseColor("#3831D4"), Shader.TileMode.CLAMP);
         mBubblesPaint.setShader(shader);
@@ -146,9 +132,9 @@ public class DropletBubbles extends View {
         mBackgroundPath.lineTo(mResultWidth / 2 + mOutRadius / 2, mResultWidth / 2 + mOutRadius / 2);
 
 
-        mBubblesPath.moveTo(mResultWidth / 2 - mOutRadius / 2, mResultWidth / 2 + mOutRadius / 2 - dp2px(mContext, 5));
-        mBubblesPath.lineTo(mResultWidth / 2, mResultWidth / 2 + mOutRadius + mOutRadius / 4 - dp2px(mContext, 5));
-        mBubblesPath.lineTo(mResultWidth / 2 + mOutRadius / 2, mResultWidth / 2 + mOutRadius / 2 - dp2px(mContext, 5));
+        mBubblesPath.moveTo(mResultWidth / 2 - mOutRadius / 2, mResultWidth / 2 + mOutRadius / 2 - dp2px(getContext(), 5));
+        mBubblesPath.lineTo(mResultWidth / 2, mResultWidth / 2 + mOutRadius + mOutRadius / 4 - dp2px(getContext(), 5));
+        mBubblesPath.lineTo(mResultWidth / 2 + mOutRadius / 2, mResultWidth / 2 + mOutRadius / 2 - dp2px(getContext(), 5));
         //画外部背景
         canvas.drawPath(mBackgroundPath, mBackgroundPaint);
         canvas.drawCircle(mResultWidth / 2, mResultWidth / 2, mOutRadius, mBackgroundPaint);
@@ -156,15 +142,10 @@ public class DropletBubbles extends View {
         //切割画布，画水波
         canvas.save();
         mBubblesPath.addCircle(mResultWidth / 2, mResultWidth / 2, mInnerRadius, Path.Direction.CCW);
-        Log.d(TAG, "mAnglez: " + mAnglez);
         canvas.clipPath(mBubblesPath);
-
 
         canvas.drawPath(getPath(), mBubblesPaint);
         canvas.restore();
-
-        Log.d(TAG, "onDraw: ");
-
 
     }
 
@@ -235,7 +216,6 @@ public class DropletBubbles extends View {
         Path mPath = new Path();
         mPath.moveTo(-itemWidth * 3, baseLine);//起始坐标
         Log.d(TAG, "getPath: " + baseLine);
-        mStartY = baseLine + waveHeight;
 
         //核心的代码就是这里
         for (int i = -3; i < 2; i++) {

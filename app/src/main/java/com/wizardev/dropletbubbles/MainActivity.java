@@ -10,7 +10,6 @@ public class MainActivity extends AppCompatActivity {
 
     DropletBubbles mDropletBubbles1;
     DropletBubbles mDropletBubbles2;
-    private int mHeight;
 
 
     @Override
