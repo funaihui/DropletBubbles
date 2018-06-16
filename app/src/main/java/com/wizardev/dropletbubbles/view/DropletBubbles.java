@@ -127,11 +127,14 @@ public class DropletBubbles extends View {
         Shader shader = new LinearGradient(mResultWidth / 2, mResultWidth / 2 - mInnerRadius, mResultWidth / 2, mResultWidth / 2 + mInnerRadius, Color.parseColor("#9592FB"),
                 Color.parseColor("#3831D4"), Shader.TileMode.CLAMP);
         mBubblesPaint.setShader(shader);
+
+        //此处代码是下部尖角的path
         mBackgroundPath.moveTo(mResultWidth / 2 - mOutRadius / 2, mResultWidth / 2 + mOutRadius / 2);
         mBackgroundPath.lineTo(mResultWidth / 2, mResultWidth / 2 + mOutRadius + mOutRadius / 4);
         mBackgroundPath.lineTo(mResultWidth / 2 + mOutRadius / 2, mResultWidth / 2 + mOutRadius / 2);
 
 
+        //内部气泡的尖角
         mBubblesPath.moveTo(mResultWidth / 2 - mOutRadius / 2, mResultWidth / 2 + mOutRadius / 2 - dp2px(getContext(), 5));
         mBubblesPath.lineTo(mResultWidth / 2, mResultWidth / 2 + mOutRadius + mOutRadius / 4 - dp2px(getContext(), 5));
         mBubblesPath.lineTo(mResultWidth / 2 + mOutRadius / 2, mResultWidth / 2 + mOutRadius / 2 - dp2px(getContext(), 5));
@@ -142,6 +145,7 @@ public class DropletBubbles extends View {
         //切割画布，画水波
         canvas.save();
         mBubblesPath.addCircle(mResultWidth / 2, mResultWidth / 2, mInnerRadius, Path.Direction.CCW);
+        //将画布裁剪成内部气泡的样子
         canvas.clipPath(mBubblesPath);
 
         canvas.drawPath(getPath(), mBubblesPaint);
